@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\DTO;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -27,6 +28,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json($validator->errors());
+            return DTO::ResponseDTO($validator->errors(), null, null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         try {
@@ -44,18 +46,10 @@ class AuthController extends Controller
             // });
             $token = $user->createToken('auth_token')->plainTextToken;
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Register Failed, ' . $th->getMessage(),
-                'token' => null,
-                'data' => null
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return DTO::ResponseDTO('Register Failed, ' . $th->getMessage(), null, null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json([
-            'message' => 'Register Succesfully',
-            'token' => $token,
-            'data' => new UserResource($user)
-        ], Response::HTTP_CREATED);
+        return DTO::ResponseDTO('Register Succesfully', $token, $user, Response::HTTP_CREATED);
     }
 
     public function login(Request $request)
@@ -66,16 +60,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors());
+            return DTO::ResponseDTO($validator->errors(), null, null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            return response()
-                ->json([
-                    'message' => 'Unauthorized',
-                    'token' => null,
-                    'data' => null
-                ], Response::HTTP_UNAUTHORIZED);
+            return DTO::ResponseDTO('Unauthorized', null, null, Response::HTTP_UNAUTHORIZED);
         }
 
         try {
@@ -83,19 +72,10 @@ class AuthController extends Controller
 
             $token = $user->createToken('auth_token')->plainTextToken;
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Login Failed',
-                'token' => null,
-                'data' => null
-            ], Response::HTTP_NOT_FOUND);
+            return DTO::ResponseDTO('Login Failed', null, null, Response::HTTP_NOT_FOUND);
         }
 
-        return response()
-            ->json([
-                'message' => 'Login Succesfully',
-                'token' => $token,
-                'data' => new UserResource($user)
-            ], Response::HTTP_OK);
+        return DTO::ResponseDTO('Login Succesfully', $token, $user, Response::HTTP_OK);
     }
 
     // method for user logout and delete token
@@ -105,17 +85,9 @@ class AuthController extends Controller
             $user = $request->user();
             $user->currentAccessToken()->delete();
         } catch (\Throwable $th) {
-            return response()->json([
-                'message' => 'Logout Failed',
-                'token' => null,
-                'data' => null
-            ], Response::HTTP_NOT_FOUND);
+            return DTO::ResponseDTO('Logout Failed', null, null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        return response()->json([
-            'message' => 'Logout Sucesfully',
-            'token' => null,
-            'data' => new UserResource($user)
-        ], Response::HTTP_OK);
+        return DTO::ResponseDTO('Logout Sucesfully', null, $user, Response::HTTP_OK);
     }
 }

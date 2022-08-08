@@ -3,7 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+<<<<<<< HEAD
 use App\Http\Controllers\API\ProgramController;
+=======
+use App\Http\Controllers\API\BookController;
+>>>>>>> c87e466aefd96d8b6fff34d12ceb15731990bf11
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +39,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
     // API route for logout user
     Route::post('/logout', [AuthController::class, 'logout']);
-});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::resource('/book', BookController::class)->except(['create', 'edit']);
 });
