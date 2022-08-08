@@ -9,8 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 use App\Models\Program;
 use App\Http\Resources\ProgramResource;
+use Exception;
+use Illuminate\Support\Facades\Validator;
 
-use Validator;
+// use Validator;
 
 class ProgramController extends Controller
 {
@@ -23,12 +25,12 @@ class ProgramController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => 'required:string:max:255',
             'desc' => 'required'
         ]);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return DTO::ResponseDTO($validator->errors(), null, null, Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -47,7 +49,7 @@ class ProgramController extends Controller
     public function show($id)
     {
         $program = Program::find($id);
-        if(is_null($program)){
+        if (is_null($program)) {
             return response()->json('Data not found', 404);
         }
         return response()->json([new ProgramResource($program)]);
@@ -57,10 +59,10 @@ class ProgramController extends Controller
     {
         $program = Program::find($id);
 
-        if(is_null($program)){
+        if (is_null($program)) {
             return DTO::ResponseDTO('Data Not Found', null, null, Response::HTTP_NOT_FOUND);
         }
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'desc' => 'required'
         ]);
@@ -85,7 +87,7 @@ class ProgramController extends Controller
     {
         $program = Program::find($id);
 
-        if(is_null($program)){
+        if (is_null($program)) {
             return DTO::ResponseDTO('Data Not Found', null, null, Response::HTTP_NOT_FOUND);
         }
         try {
@@ -96,5 +98,4 @@ class ProgramController extends Controller
 
         return DTO::ResponseDTO('Delete Program Successfully', null, null, Response::HTTP_OK);
     }
-
 }
