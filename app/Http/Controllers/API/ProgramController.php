@@ -6,11 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Helpers\DTO;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Validator;
 
 use App\Models\Program;
 use App\Http\Resources\ProgramResource;
-
-use Validator;
 
 class ProgramController extends Controller
 {
@@ -48,9 +47,9 @@ class ProgramController extends Controller
     {
         $program = Program::find($id);
         if(is_null($program)){
-            return response()->json('Data not found', 404);
+            return DTO::ResponseDTO('Data Not Found', null, null, Response::HTTP_NOT_FOUND);
         }
-        return response()->json([new ProgramResource($program)]);
+        return DTO::ResponseDTO('Show Program Successfully', null, $program, Response::HTTP_OK);
     }
 
     public function update(Request $request, $id)
@@ -90,7 +89,7 @@ class ProgramController extends Controller
         }
         try {
             $program->delete();
-        } catch (Exception $error) {
+        } catch (\Exception $error) {
             return DTO::ResponseDTO('Delete Program Failed', null, null, Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
