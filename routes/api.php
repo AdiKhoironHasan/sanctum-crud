@@ -22,12 +22,6 @@ Route::post('/register', [AuthController::class, 'register']);
 //API route for login user
 Route::post('/login', [AuthController::class, 'login']);
 
-Route::get('programs', [ProgramController::class, 'index']);
-Route::post('programs/store', [ProgramController::class, 'store']);
-Route::get('programs/show/{id}', [ProgramController::class, 'show']);
-Route::put('programs/update/{id}', [ProgramController::class, 'update']);
-Route::delete('programs/destroy/{id}', [ProgramController::class, 'destroy']);
-
 //Protecting Routes
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', function (Request $request) {
@@ -38,6 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::resource('/book', BookController::class)->except(['create', 'edit']);
+    Route::resource('/programs', ProgramController::class)->except(['create', 'edit']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
