@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\DTO;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserController extends Controller
 {
@@ -15,7 +17,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        return 0;
+        return DTO::ResponseDTO('Success get users', null, User::all(), Response::HTTP_OK);
     }
 
     /**
